@@ -130,14 +130,14 @@ export function LoginPage({
 
           <div className="mt-8 pt-8 border-t border-white/5">
              <p className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-4 text-center">Protocol Shortcuts</p>
-             <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'CEO Admin', email: 'ceo@company.com', role: 'CEO' },
-                  { label: 'HR Operations', email: 'hr@company.com', role: 'HR' },
-                  { label: 'Engineering', email: 'teamlead@company.com', role: 'Lead' },
-                  { label: 'Marketing', email: 'marketing@company.com', role: 'Marketing' },
-                  { label: 'Department Mgr', email: 'manager@company.com', role: 'Manager' },
-                  { label: 'Employee Hub', email: 'employee@company.com', role: 'Employee' },
+                  { label: 'CEO Admin', email: 'ceo@aurahr.com', role: 'CEO' },
+                  { label: 'HR Operations', email: 'hr@aurahr.com', role: 'HR' },
+                  { label: 'Platform Lead', email: 'manager@aurahr.com', role: 'Manager' },
+                  { label: 'Marketing', email: 'marketing@aurahr.com', role: 'Marketing' },
+                  { label: 'Tech Lead', email: 'lead@aurahr.com', role: 'Lead' },
+                  { label: 'Employee Hub', email: 'employee@aurahr.com', role: 'Employee' },
                 ].map(p => (
                   <button 
                     key={p.label}
@@ -147,10 +147,10 @@ export function LoginPage({
                       setLoading(true)
                       setLocalError(null)
                       setEmail(p.email)
-                      setPassword('123456')
+                      setPassword('Password@123')
                       setSelectedRole(p.role)
                       try {
-                        await onLogin(p.email, '123456', p.role)
+                        await onLogin(p.email, 'Password@123', p.role)
                       } catch (err: any) {
                         setLocalError(err.message || 'Identity verification failed.')
                       } finally {

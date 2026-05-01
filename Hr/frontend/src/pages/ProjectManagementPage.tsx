@@ -1,17 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  LayoutDashboard, 
   Plus, 
   Search, 
   Filter, 
   Clock, 
   Calendar, 
-  Users, 
   MoreVertical,
   CheckCircle2,
-  Clock3,
   AlertCircle,
-  ChevronRight,
   Target,
   BarChart3,
   Briefcase

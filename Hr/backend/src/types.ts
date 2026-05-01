@@ -95,11 +95,15 @@ export interface LeaveRequest {
   id: string
   employeeId: string
   employeeName: string
-  type: 'Annual Leave' | 'Sick Leave' | 'WFH' | 'Comp Off'
+  type: 'Sick Leave' | 'Casual Leave' | 'Emergency Leave' | 'Uninformed Leave'
   from: string
   to: string
-  status: 'Pending' | 'Approved' | 'Rejected'
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Pending Documents'
   reason: string
+  hrReason?: string
+  documentUrl?: string
+  isUninformed: boolean
+  createdAt: string
 }
 
 export interface PayrollBreakdown {

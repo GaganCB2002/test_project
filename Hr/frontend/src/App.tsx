@@ -18,7 +18,6 @@ import {
   CompliancePage,
   EngagementPage,
   ExitPage,
-  OnboardingPage,
   PayrollPage,
   PeoplePage,
   PerformancePage,
@@ -33,10 +32,10 @@ import { ActivityFeedPage } from './pages/ActivityFeedPage'
 import { MailPage } from './pages/MailPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { DocumentationPage } from './pages/DocumentationPage'
-import { LeaveManagementPage } from './pages/LeaveManagementPage'
-import { EmployeeDashboardPage } from './pages/EmployeeDashboardPage'
-import { ProjectManagementPage } from './pages/ProjectManagementPage'
-import { HumanResourcesPage } from './pages/HumanResourcesPage'
+import { hrRoutes } from './modules/hr/hrRoutes'
+import { employeeRoutes } from './modules/employee/employeeRoutes'
+import { techRoutes } from './modules/tech/techRoutes'
+import { getDashboardPath } from './shared/roleManager'
 import { MeetingRoom } from './pages/MeetingRoom'
 import { useTracking } from './hooks/useTracking'
 import type { ActivityItem, PlatformData, User } from './types'
@@ -204,65 +203,19 @@ function App() {
 
     return (
       <Routes>
-        <Route path="/dashboard" element={<MasterDashboardPage user={user} onLogout={logout} />} />
+        {/* Dynamic Redirect based on Role */}
+        <Route path="/dashboard" element={<Navigate to={getDashboardPath(user.role)} replace />} />
         
-        <Route path="/hr-dashboard" element={
-          <ProtectedRoute user={user} allowedRoles={['HR', 'CEO', 'ADMIN']}>
-            {!platform ? (
-              <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
-                 <div className="text-center">
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-luxury-blue border-t-transparent mx-auto mb-4"></div>
-                    <p className="text-sm font-bold text-slate-500">Initializing HR Dashboard...</p>
-                 </div>
-              </div>
-            ) : (
-              <DashboardPage data={platform.dashboard} feed={feed} onRefresh={async () => { await refreshPlatform() }} />
-            )}
-          </ProtectedRoute>
-        } />
+        {/* Modular Dashboard Routes */}
+        {hrRoutes(user, platform, feed, token, refreshPlatform)}
+        {employeeRoutes(user, platform, token)}
+        {techRoutes(user, token)}
 
-        <Route path="/employee-dashboard" element={
-          <ProtectedRoute user={user} allowedRoles={['Employee']}>
-            <EmployeeDashboardPage platform={platform} user={user} token={token} />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/manager-dashboard" element={
-          <ProtectedRoute user={user} allowedRoles={['Manager', 'CEO', 'ADMIN']}>
-            <MasterDashboardPage user={user} onLogout={logout} />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/techlead-dashboard" element={
-          <ProtectedRoute user={user} allowedRoles={['TECH_LEAD', 'Lead']}>
-            <TechLeadDashboard user={user} />
-          </ProtectedRoute>
-        } />
-        <Route path="/marketing-hub" element={<MarketingDashboard />} />
-        
-        <Route path="/sales" element={<ProtectedRoute user={user} allowedRoles={['Marketing', 'CEO']}><SalesPipeline /></ProtectedRoute>} />
-        <Route path="/ai-insights" element={<ProtectedRoute user={user} allowedRoles={['Marketing', 'CEO']}><AIInsights /></ProtectedRoute>} />
-
-        <Route path="/feed" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'TECH_LEAD']}><ActivityFeedPage feed={feed} /></ProtectedRoute>} />
-        <Route path="/recruitment" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'TECH_LEAD']}><RecruitmentPage platform={platform} token={token} role={user.role} onRefresh={async () => { await refreshPlatform() }} /></ProtectedRoute>} />
-        <Route path="/allocation" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'TECH_LEAD']}><AllocationPage platform={platform} token={token} onRefresh={async () => { await refreshPlatform() }} /></ProtectedRoute>} />
-        <Route path="/leave-approvals" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'TECH_LEAD']}><HumanResourcesPage /></ProtectedRoute>} />
-        <Route path="/payroll" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager']}><PayrollPage platform={platform} token={token} onRefresh={async () => { await refreshPlatform() }} /></ProtectedRoute>} />
-        <Route path="/budget" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR']}><BudgetPage platform={platform} /></ProtectedRoute>} />
-        <Route path="/exit" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager']}><ExitPage platform={platform} /></ProtectedRoute>} />
-        
+        {/* Shared / Utility Routes */}
         <Route path="/profile" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD', 'Marketing']}><ProfilePage user={user} token={token} onUpdate={(updated) => setUser(updated)} /></ProtectedRoute>} />
-        <Route path="/onboarding" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><OnboardingPage platform={platform} /></ProtectedRoute>} />
         <Route path="/documentation" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD', 'Marketing']}><DocumentationPage platform={platform} /></ProtectedRoute>} />
-        <Route path="/people" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><PeoplePage platform={platform} token={token} /></ProtectedRoute>} />
         <Route path="/chat" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD', 'Marketing']}><ChatPage user={user} token={token} /></ProtectedRoute>} />
         <Route path="/mail" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD', 'Marketing']}><MailPage user={user} token={token} /></ProtectedRoute>} />
-        <Route path="/attendance" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><HumanResourcesPage /></ProtectedRoute>} />
-        <Route path="/performance" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><PerformancePage platform={platform} /></ProtectedRoute>} />
-        <Route path="/projects" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD', 'Marketing']}><ProjectManagementPage /></ProtectedRoute>} />
-        <Route path="/engagement" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><EngagementPage platform={platform} /></ProtectedRoute>} />
-        <Route path="/compliance" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><CompliancePage platform={platform} /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute user={user} allowedRoles={['CEO', 'HR', 'Manager', 'Lead', 'Employee', 'TECH_LEAD']}><AnalyticsPage platform={platform} /></ProtectedRoute>} />
       </Routes>
     )
   }, [feed, platform, refreshPlatform, token, user, logout])

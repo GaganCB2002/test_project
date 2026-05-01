@@ -22,7 +22,7 @@ export function SolutionsPage() {
     {
       title: "Enterprise HR Management",
       icon: ShieldCheck,
-      desc: "Comprehensive lifecycle management for large-scale organizations. Automate recruitment, onboarding, and compliance with high-performance precision.",
+      desc: "Comprehensive lifecycle management for large-scale organizations. Automate recruitment, leave management, and compliance with high-performance precision.",
       useCase: "Scale your workforce from 100 to 10,000+ with zero administrative friction."
     },
     {

@@ -13,7 +13,8 @@ import {
   LayoutGrid,
   ShieldCheck,
   Zap,
-  Maximize2
+  Maximize2,
+  Send
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 

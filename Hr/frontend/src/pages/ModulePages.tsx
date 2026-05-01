@@ -27,8 +27,9 @@ import { MetricCard } from '../components/ui/MetricCard'
 import { SectionCard } from '../components/ui/SectionCard'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { currency, dateLabel, dateTimeLabel } from '../lib/format'
-import { Sparkles, Download, CheckCircle2, History, CreditCard, ChevronRight, Calculator, AlertTriangle, Brain, RefreshCw, User as UserIcon, Smartphone, Laptop } from 'lucide-react'
-import type { PlatformData, Role, User, PayrollRecord } from '../types'
+import { useNavigate } from 'react-router-dom'
+import { Download, CheckCircle2, CreditCard, ChevronRight, Calculator, RefreshCw, User as UserIcon, Smartphone, Laptop, Activity, UserPlus } from 'lucide-react'
+import type { PlatformData, Role, User } from '../types'
 
 const chartColors = ['#0f766e', '#2563eb', '#f97316', '#7c3aed', '#e11d48']
 
@@ -229,82 +230,6 @@ export function RecruitmentPage({
   )
 }
 
-export function OnboardingPage({ platform }: { platform: PlatformData }) {
-  return (
-    <div className="space-y-4">
-      <section className="grid gap-4 lg:grid-cols-2">
-        <MetricCard
-          metric={{
-            id: 'pending-onboarding',
-            label: 'Pending onboarding',
-            value: platform.onboarding.progressSummary.pending.toString(),
-            delta: 'Across pre-boarding and active cohorts',
-            tone: 'neutral',
-          }}
-        />
-        <MetricCard
-          metric={{
-            id: 'avg-completion',
-            label: 'Average completion',
-            value: `${platform.onboarding.progressSummary.avgCompletion}%`,
-            delta: 'KYC, assets, access, payroll, and welcome tasks',
-            tone: 'positive',
-          }}
-        />
-      </section>
-      <SectionCard title="Onboarding command center" subtitle="Track document collection, e-signatures, assets, and access provisioning.">
-        <div className="grid gap-4 xl:grid-cols-2">
-          {platform.onboarding.records.map((record) => (
-            <article key={record.id} className="rounded-[24px] border border-slate-200 bg-white p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-display text-2xl font-bold text-slate-900">{record.employeeId}</p>
-                  <p className="text-sm text-slate-500">Buddy: {record.buddy}</p>
-                </div>
-                <StatusBadge label={record.status} />
-              </div>
-
-              <div className="mt-4 h-3 rounded-full bg-slate-100">
-                <div className="h-3 rounded-full bg-brand" style={{ width: `${record.completion}%` }} />
-              </div>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Documents</p>
-                  <ul className="mt-2 space-y-2 text-sm text-slate-600">
-                    {record.documents.map((document, idx) => (
-                      <li key={`${document}-${idx}`}>{document}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Assets and access</p>
-                  <ul className="mt-2 space-y-2 text-sm text-slate-600">
-                    {[...record.assets, ...record.accessProvisioned].map((item, idx) => (
-                      <li key={`${item}-${idx}`}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-2">
-                {record.tasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm">
-                    <div>
-                      <p className="font-medium text-slate-900">{task.label}</p>
-                      <p className="text-xs text-slate-500">{task.owner}</p>
-                    </div>
-                    <StatusBadge label={task.completed ? 'Completed' : 'Pending'} />
-                  </div>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </SectionCard>
-    </div>
-  )
-}
 
 export function PeoplePage({ platform, token }: { platform: PlatformData; token: string }) {
   return (
@@ -367,24 +292,13 @@ export function PeoplePage({ platform, token }: { platform: PlatformData; token:
 
 export function AttendancePage({
   platform,
-  token,
-  user,
-  onRefresh,
 }: {
   platform: PlatformData
   token: string
   user: User
   onRefresh: () => Promise<void>
 }) {
-  const [form, setForm] = useState({
-    employeeId: user.employeeId ?? platform.employees.employees[0]?.id ?? '',
-    employeeName: user.name,
-    type: 'Annual Leave',
-    from: '2026-05-06',
-    to: '2026-05-07',
-    reason: 'Personal work',
-  })
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null)
+  // Attendance state managed centrally
 
   return (
     <div className="space-y-4">
@@ -423,80 +337,6 @@ export function AttendancePage({
           </div>
         </SectionCard>
 
-        <SectionCard 
-          title="Apply for time-off" 
-          subtitle="Submit a request into the approval workflow. AI will analyze team workload automatically."
-        >
-          <div className="mb-4 rounded-xl bg-amber-50 p-4 border border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/20">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-brand" />
-              <p className="text-xs font-bold uppercase tracking-widest text-brand">AI Copilot Prediction</p>
-            </div>
-            <p className="text-sm text-slate-700 dark:text-slate-300">
-              {aiSuggestion || "Select dates to trigger risk analysis..."}
-            </p>
-          </div>
-
-          <form
-            className="grid gap-3"
-            onSubmit={async (event) => {
-              event.preventDefault()
-              await api.createLeaveRequest(form, token)
-              await onRefresh()
-              setForm((current) => ({ ...current, reason: '' }))
-            }}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <select
-                className="rounded-2xl border border-slate-200 px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:border-slate-800 dark:text-white"
-                value={form.type}
-                onChange={(event) => setForm((current) => ({ ...current, type: event.target.value }))}
-              >
-                {['Annual Leave', 'Sick Leave', 'WFH', 'Comp Off'].map((option) => (
-                  <option key={option}>{option}</option>
-                ))}
-              </select>
-              <div className="flex gap-2">
-                 <input
-                  type="date"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:border-slate-800 dark:text-white"
-                  value={form.from}
-                  onChange={(event) => setForm((current) => ({ ...current, from: event.target.value }))}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-               <input
-                type="date"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:border-slate-800 dark:text-white"
-                value={form.to}
-                onChange={(event) => setForm((current) => ({ ...current, to: event.target.value }))}
-              />
-              <button 
-                type="button"
-                onClick={async () => {
-                  const res = await api.getAISuggestion(form.employeeId, form.from, form.to, token)
-                  setAiSuggestion(res.suggestion)
-                }}
-                className="flex items-center justify-center gap-2 rounded-2xl border-2 border-brand/20 bg-brand/5 px-4 py-3 text-xs font-bold text-brand hover:bg-brand/10 transition"
-              >
-                <Sparkles className="h-4 w-4" />
-                Analyze Risk
-              </button>
-            </div>
-
-            <textarea
-              className="min-h-24 rounded-2xl border border-slate-200 px-4 py-3 bg-slate-50 dark:bg-slate-800 dark:border-slate-800 dark:text-white"
-              value={form.reason}
-              onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))}
-              placeholder="Detailed reason for leave..."
-            />
-            <button type="submit" className="rounded-2xl bg-brand py-4 text-sm font-bold text-white shadow-lg shadow-brand/20 hover:scale-[1.01] active:scale-95 transition">
-              Process Request
-            </button>
-          </form>
-        </SectionCard>
       </section>
 
       <SectionCard title="Leave workflow" subtitle="Approval queue and employee time-off requests.">
@@ -753,58 +593,126 @@ export function PerformancePage({ platform }: { platform: PlatformData }) {
   )
 }
 
-export function ProjectsPage({ platform }: { platform: PlatformData }) {
+export function ProjectsPage({ token }: { token: string }) {
+  const navigate = useNavigate()
+  const [projects, setProjects] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await api.getProjects(token)
+        setProjects(data)
+      } catch (err) {
+        console.error("Failed to load projects", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [token])
+
+  if (loading) return <div className="p-12 text-center text-slate-400 font-bold animate-pulse">Scanning Project Infrastructure...</div>
+
   return (
-    <div className="space-y-4">
-      <SectionCard title="Project and task tracking" subtitle="Manager-assigned tasks, timesheets, and productivity visibility.">
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="table-shell overflow-x-auto">
+    <div className="space-y-6">
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <button
+            key={project.id}
+            onClick={() => navigate(`/projects/${project.id}`)}
+            className="group relative overflow-hidden rounded-[32px] border-2 border-slate-100 bg-white p-8 text-left transition-all hover:scale-[1.02] hover:border-brand/30 hover:shadow-2xl hover:shadow-brand/10 active:scale-95"
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-brand transition-colors">
+                  {project.status}
+                </p>
+                <h3 className="text-xl font-black text-slate-900 leading-tight uppercase">{project.name}</h3>
+              </div>
+              <div className="rounded-2xl bg-slate-50 p-3 text-slate-400 group-hover:bg-brand group-hover:text-white transition-all">
+                <Activity className="h-5 w-5" />
+              </div>
+            </div>
+
+            <p className="mt-4 line-clamp-2 text-sm font-medium text-slate-500 leading-relaxed">
+              {project.description || "Mission-critical operations and technical deployment sequence."}
+            </p>
+
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-slate-400">
+                <span>Execution Progress</span>
+                <span className="text-slate-900">{project.progress}%</span>
+              </div>
+              <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-brand transition-all duration-1000 group-hover:brightness-110" 
+                  style={{ width: `${project.progress}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-50">
+              <div className="flex -space-x-3">
+                {[...Array(Math.min(3, parseInt(project.member_count) || 1))].map((_, i) => (
+                  <div key={i} className="h-8 w-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">
+                    {String.fromCharCode(65 + i)}
+                  </div>
+                ))}
+                {parseInt(project.member_count) > 3 && (
+                  <div className="h-8 w-8 rounded-full border-2 border-white bg-brand flex items-center justify-center text-[10px] font-black text-white">
+                    +{parseInt(project.member_count) - 3}
+                  </div>
+                )}
+              </div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                {project.member_count || 0} Members Working
+              </p>
+            </div>
+          </button>
+        ))}
+
+        <button className="flex flex-col items-center justify-center gap-4 rounded-[32px] border-2 border-dashed border-slate-200 bg-slate-50/50 p-8 text-slate-400 hover:border-brand hover:bg-brand/5 hover:text-brand transition-all group">
+          <div className="p-4 rounded-2xl bg-white shadow-sm group-hover:shadow-lg transition">
+            <UserPlus className="h-6 w-6" />
+          </div>
+          <p className="text-sm font-black uppercase tracking-widest">Initialize Project</p>
+        </button>
+      </section>
+
+      <SectionCard title="Operational Log" subtitle="Real-time task distribution across active projects.">
+         <div className="table-shell overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
-                  {['Task', 'Project', 'Employee', 'Manager', 'Hours', 'Status'].map((head) => (
-                    <th key={head} className="px-4 py-3 font-semibold">
-                      {head}
-                    </th>
+                  {['Mission Task', 'Personnel', 'Manager', 'Hours', 'Status'].map((head) => (
+                    <th key={head} className="px-6 py-4 font-bold uppercase tracking-widest text-[10px]">{head}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {platform.projects.tasks.map((task) => (
-                  <tr key={task.id} className="border-t border-slate-100">
-                    <td className="px-4 py-4">
-                      <p className="font-semibold text-slate-900">{task.title}</p>
-                      <p className="text-xs text-slate-500">Due {dateLabel(task.dueDate)}</p>
+                {projects.flatMap(p => p.tasks || []).map((task: any) => (
+                  <tr key={task.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">{task.title}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase">{task.project_name}</p>
                     </td>
-                    <td className="px-4 py-4">{task.project}</td>
-                    <td className="px-4 py-4">{task.employeeName}</td>
-                    <td className="px-4 py-4">{task.manager}</td>
-                    <td className="px-4 py-4">{task.loggedHours}</td>
-                    <td className="px-4 py-4">
+                    <td className="px-6 py-4 font-medium text-slate-600">{task.employeeName}</td>
+                    <td className="px-6 py-4 font-medium text-slate-600">{task.manager}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900">{task.loggedHours}h</td>
+                    <td className="px-6 py-4">
                       <StatusBadge label={task.status} />
                     </td>
                   </tr>
                 ))}
+                {projects.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400 italic">No operational data detected.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
-
-          <div className="h-80">
-          <div style={{ width: '100%', height: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={platform.projects.utilization}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="employeeName" hide />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="hours" fill="#0f766e" radius={[12, 12, 0, 0]} />
-                <Bar dataKey="productivityScore" fill="#f97316" radius={[12, 12, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          </div>
-        </div>
       </SectionCard>
     </div>
   )

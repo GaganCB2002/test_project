@@ -90,19 +90,66 @@ router.get('/employees', authorize('CEO', 'HR', 'Manager', 'Lead'), (req, res) =
 router.get('/hierarchy/root', (req, res) => res.json(hrService.getHierarchyRoot()))
 router.get('/hierarchy/:employeeId/children', (req, res) => res.json(hrService.getHierarchyChildren(req.params.employeeId)))
 
-// Attendance & Leaves
+// Attendance & Leave Management
 router.get('/attendance', authorize('CEO', 'HR', 'Manager', 'Lead'), (req, res) => res.json(hrService.getAttendance()))
-router.post('/attendance/leave-requests', (req, res) => {
+
+router.get('/leave/all', authorize('CEO', 'HR', 'Manager'), (req, res) => {
+  res.json(hrService.getAllLeaveRequests())
+})
+
+router.get('/leave/my-leaves', (req, res) => {
+  res.json(hrService.getMyLeaveRequests(req.auth!.sub))
+})
+
+router.post('/leave/apply', (req, res) => {
   const parsed = z.object({
     employeeId: z.string(),
     employeeName: z.string(),
-    type: z.enum(['Annual Leave', 'Sick Leave', 'WFH', 'Comp Off']),
+    type: z.enum(['Sick Leave', 'Casual Leave', 'Emergency Leave', 'Uninformed Leave']),
     from: z.string(),
     to: z.string(),
     reason: z.string().min(3)
   }).safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ message: 'Invalid payload' })
-  res.status(201).json(hrService.createLeaveRequest(parsed.data))
+  const result = hrService.createLeaveRequest(parsed.data)
+  
+  // Real-time notification
+  req.app.get('io').emit('leave_update', { type: 'new_request', data: result })
+  
+  res.status(201).json(result)
+})
+
+router.post('/leave/approve/:id', authorize('CEO', 'HR', 'Manager'), (req, res) => {
+  const result = hrService.approveLeaveRequest(req.params.id)
+  if (!result) return res.status(404).json({ message: 'Leave request not found' })
+  
+  // Real-time notification to the specific employee
+  req.app.get('io').emit('leave_status_update', { id: req.params.id, status: 'Approved' })
+  
+  res.json(result)
+})
+
+router.post('/leave/reject/:id', authorize('CEO', 'HR', 'Manager'), (req, res) => {
+  const parsed = z.object({ reason: z.string().min(3) }).safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ message: 'Rejection reason is mandatory' })
+  
+  const result = hrService.rejectLeaveRequest(req.params.id, parsed.data.reason)
+  if (!result) return res.status(404).json({ message: 'Leave request not found' })
+  
+  // Real-time notification
+  req.app.get('io').emit('leave_status_update', { id: req.params.id, status: 'Rejected', hrReason: parsed.data.reason })
+  
+  res.json(result)
+})
+
+router.post('/leave/upload-document', (req, res) => {
+  const parsed = z.object({ id: z.string(), documentUrl: z.string() }).safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ message: 'Invalid upload data' })
+  
+  const result = hrService.uploadLeaveDocument(parsed.data.id, parsed.data.documentUrl)
+  if (!result) return res.status(404).json({ message: 'Leave request not found' })
+  
+  res.json(result)
 })
 router.get('/ai/leave-suggestion', (req, res) => {
   const { employeeId, from, to } = req.query as any

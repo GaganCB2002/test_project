@@ -1,7 +1,5 @@
 import { 
   Bot, 
-  CalendarClock, 
-  CheckCheck, 
   Code2, 
   GitBranch, 
   LayoutDashboard, 
@@ -10,9 +8,7 @@ import {
   ShieldCheck, 
   Sparkles, 
   Terminal, 
-  TrendingUp, 
-  TriangleAlert, 
-  UsersRound 
+  TrendingUp 
 } from 'lucide-react';
 import { useMemo } from 'react';
 import type { User } from '../types';

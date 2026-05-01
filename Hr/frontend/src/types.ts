@@ -63,23 +63,7 @@ export interface Candidate {
   }
 }
 
-export interface OnboardingRecord {
-  id: string
-  employeeId: string
-  buddy: string
-  completion: number
-  status: string
-  documents: string[]
-  eSignatureComplete: boolean
-  assets: string[]
-  accessProvisioned: string[]
-  tasks: Array<{
-    id: string
-    label: string
-    owner: string
-    completed: boolean
-  }>
-}
+// Onboarding module removed in favor of Leave Management
 
 export interface Employee {
   id: string
@@ -103,11 +87,15 @@ export interface LeaveRequest {
   id: string
   employeeId: string
   employeeName: string
-  type: string
+  type: 'Sick Leave' | 'Casual Leave' | 'Emergency Leave' | 'Uninformed Leave'
   from: string
   to: string
-  status: string
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Pending Documents'
   reason: string
+  hrReason?: string
+  documentUrl?: string
+  isUninformed: boolean
+  createdAt: string
 }
 
 export interface PayrollRecord {
@@ -243,13 +231,7 @@ export interface PlatformData {
     candidates: Candidate[]
     pipelineCounts: Array<{ stage: string; count: number }>
   }
-  onboarding: {
-    records: OnboardingRecord[]
-    progressSummary: {
-      pending: number
-      avgCompletion: number
-    }
-  }
+  // onboarding removed
   employees: {
     employees: Employee[]
     departments: Array<{ department: string; count: number }>

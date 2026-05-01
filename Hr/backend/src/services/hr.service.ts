@@ -175,10 +175,12 @@ export const hrService = {
     }
   },
 
-  createLeaveRequest(input: Omit<LeaveRequest, 'id' | 'status'>) {
+  createLeaveRequest(input: Omit<LeaveRequest, 'id' | 'status' | 'createdAt' | 'isUninformed'>) {
     const request: LeaveRequest = {
       id: `leave-${Date.now()}`,
       status: 'Pending',
+      isUninformed: false,
+      createdAt: new Date().toISOString(),
       ...input
     }
     db.update((data) => {
@@ -191,6 +193,66 @@ export const hrService = {
       actor: request.employeeName
     })
     return request
+  },
+
+  getAllLeaveRequests() {
+    return db.get().leaveRequests
+  },
+
+  getMyLeaveRequests(employeeId: string) {
+    return db.get().leaveRequests.filter(r => r.employeeId === employeeId)
+  },
+
+  approveLeaveRequest(id: string) {
+    let updated: LeaveRequest | null = null
+    db.update((data) => {
+      const found = data.leaveRequests.find(r => r.id === id)
+      if (found) {
+        found.status = 'Approved'
+        updated = found
+        activityService.log({
+          title: 'Leave Approved',
+          detail: `Leave for ${found.employeeName} approved.`,
+          category: 'Attendance',
+          actor: 'HR'
+        })
+      }
+    })
+    return updated
+  },
+
+  rejectLeaveRequest(id: string, hrReason: string) {
+    let updated: LeaveRequest | null = null
+    db.update((data) => {
+      const found = data.leaveRequests.find(r => r.id === id)
+      if (found) {
+        found.status = 'Rejected'
+        found.hrReason = hrReason
+        updated = found
+        activityService.log({
+          title: 'Leave Rejected',
+          detail: `Leave for ${found.employeeName} rejected: ${hrReason}`,
+          category: 'Attendance',
+          actor: 'HR'
+        })
+      }
+    })
+    return updated
+  },
+
+  uploadLeaveDocument(id: string, documentUrl: string) {
+    let updated: LeaveRequest | null = null
+    db.update((data) => {
+      const found = data.leaveRequests.find(r => r.id === id)
+      if (found) {
+        found.documentUrl = documentUrl
+        if (found.status === 'Pending Documents') {
+          found.status = 'Pending'
+        }
+        updated = found
+      }
+    })
+    return updated
   },
 
   getPayroll() {

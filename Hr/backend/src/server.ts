@@ -9,6 +9,9 @@ import authRoutes from './routes/auth.routes'
 import hrRoutes from './routes/hr.routes'
 import analysisRoutes from './routes/analysis.routes'
 import locationRoutes from './routes/location.routes'
+import { leaveScheduler } from './services/leaveScheduler'
+
+leaveScheduler.start()
 
 const app = express()
 const httpServer = createServer(app)

@@ -1,4 +1,7 @@
+import axios from 'axios'
 import type { HierarchyNode, PlatformData, User } from '../types'
+
+const PG_BASE = '/api'
 
 type RequestOptions = RequestInit & {
   token?: string
@@ -63,13 +66,7 @@ export const api = {
     return request<{ suggestion: string }>(`/api/ai/leave-suggestion?employeeId=${employeeId}&from=${from}&to=${to}`, { token })
   },
 
-  getAllLeaveRequests(token: string) {
-    return request<any[]>('/api/leave/all', { token })
-  },
-
-  getMyLeaveRequests(token: string) {
-    return request<any[]>('/api/leave/my-leaves', { token })
-  },
+  // Legacy leave requests removed in favor of enterprise PG implementation below
 
   createLeaveRequest(payload: any, token: string) {
     return request('/api/leave/apply', {
