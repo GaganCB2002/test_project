@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #6366f1;
+  --primary-glow: rgba(99, 102, 241, 0.5);
+  --secondary: #a855f7;
+  --accent: #ec4899;
+  --bg-main: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-main: #e2e8f0;
+}
+
+.dark {
+  --primary: #818cf8;
+  --primary-glow: rgba(129, 140, 248, 0.3);
+  --secondary: #c084fc;
+  --accent: #f472b6;
+  --bg-main: #0f172a;
+  --card-bg: #1e293b;
+  --border-main: #334155;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-main);
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+.dark body {
+  color: #f1f5f9;
+}
+
+/* Solid Cards */
+.glass, .glass-morphism {
+  background: var(--card-bg);
+  border: 1px solid var(--border-main);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.4);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500;
+}
+
+.gradient-border {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 1rem;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+  border-radius: 1.1rem;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+  opacity: 1;
+}
+
+@layer components {
+  .btn-premium {
+    @apply relative overflow-hidden px-6 py-3 rounded-2xl font-semibold transition-all duration-300
+           bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25
+           hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .nav-item-active {
+    @apply bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-l-4 border-indigo-500 text-indigo-600 dark:text-indigo-400;
+  }
+
+  .card-premium {
+    @apply glass-morphism rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10;
+  }
+}

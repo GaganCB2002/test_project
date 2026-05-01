@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #f8fafc;
+    --text-main: #020617;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark {
+    --bg-main: #020617;
+    --text-main: #f8fafc;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg-main);
+    background-image:
+      radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 30%),
+      radial-gradient(circle at top right, rgba(249, 115, 22, 0.14), transparent 24%),
+      linear-gradient(180deg, var(--bg-main) 0%, var(--bg-main) 100%);
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 40%),
+      radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 30%),
+      linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply rounded-[28px] border border-white/70 bg-white/90 shadow-premium backdrop-blur dark:border-slate-800/70 dark:bg-slate-900/90 dark:shadow-none;
+  }
+
+  .section-title {
+    @apply font-display text-2xl font-bold tracking-tight text-slate-900;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-slate-500;
+  }
+
+  .table-shell {
+    @apply overflow-hidden rounded-[24px] border border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-900;
+  }
+
+  .org-connector {
+    position: relative;
+  }
+
+  .org-connector::before {
+    content: '';
+    position: absolute;
+    left: 1.4rem;
+    top: -1.4rem;
+    bottom: calc(100% - 1.4rem);
+    width: 1px;
+    background: linear-gradient(180deg, rgba(15, 118, 110, 0.1), rgba(15, 118, 110, 0.45));
+  }
+
+  /* Custom Scrollbar for smooth scroll animations */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full transition-colors duration-300;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-500;
+  }
+}
+

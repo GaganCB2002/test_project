@@ -1,0 +1,10 @@
+{
+  "name": "aurahr-enterprise",
+  "version": "1.0.0",
+  "description": "Centralized AuraHR Enterprise Platform",
+  "scripts": {
+    "start": "node startup_web.js",
+    "dev": "node startup_web.js",
+    "install-all": "npm install && cd \"adminster/backend\" && npm install && cd \"../../web-page/frontend\" && npm install && cd \"../../Hr\" && npm install && cd \"backend\" && npm install && cd \"../frontend\" && npm install && cd \"../Employee/frontend\" && npm install && cd \"../../tech_lead/backend\" && npm install && cd \"../frontend\" && npm install && cd \"../../IT Helpdesk Ticketing System/client\" && npm install && cd \"../server\" && npm install && cd \"../../marketing_sales\" && npm install && cd \"../Location/client\" && npm install && cd \"../server\" && npm install"
+  }
+}

@@ -1,0 +1,39 @@
+[
+  {
+    "id": "emp-100",
+    "name": "Aarav Mehta",
+    "email": "ceo@aurahr.com",
+    "title": "Chief Executive Officer",
+    "department": "Executive",
+    "level": "CEO",
+    "location": "Bengaluru",
+    "employmentType": "Full-time",
+    "joinDate": "2020-01-08",
+    "compensation": 6200000,
+    "engagementScore": 91,
+    "performanceRating": 4.9,
+    "attritionRisk": 4,
+    "status": "Active",
+    "documents": ["Contract", "Board Resolution"],
+    "skills": ["Leadership", "Strategy", "Growth"]
+  },
+  {
+    "id": "emp-101",
+    "name": "Nisha Kapoor",
+    "email": "hr@aurahr.com",
+    "title": "Head of People Operations",
+    "department": "People Ops",
+    "level": "HR",
+    "location": "Bengaluru",
+    "employmentType": "Full-time",
+    "joinDate": "2021-03-12",
+    "managerId": "emp-100",
+    "compensation": 2600000,
+    "engagementScore": 88,
+    "performanceRating": 4.6,
+    "attritionRisk": 9,
+    "status": "Active",
+    "documents": ["Contract", "NDA", "Performance Letter"],
+    "skills": ["Talent Strategy", "HRBP", "Policy Design"]
+  }
+]

@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-dark-bg: #0f172a;
+  --color-dark-card: #1e293b;
+  --color-dark-text: #f8fafc;
+  --color-dark-border: #334155;
+  
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+}
+
+@utility glass-card {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+}
+
+.dark .glass-card {
+  background-color: rgba(30, 41, 59, 0.7);
+  border-color: rgba(51, 65, 85, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+@utility btn-primary {
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary-600);
+  color: white;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-700);
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+}
+
+@utility sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.sidebar-item:hover {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-600);
+}
+
+.dark .sidebar-item {
+  color: #94a3b8;
+}
+
+.dark .sidebar-item:hover {
+  background-color: #1e293b;
+  color: white;
+}
+
+@utility sidebar-item-active {
+  background-color: var(--color-primary-600);
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+}
+
+.dark .sidebar-item-active {
+  background-color: var(--color-primary-500);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+}
+
+/* Base Styles */
+body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}

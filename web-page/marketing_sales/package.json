@@ -1,0 +1,19 @@
+{
+  "name": "ai-marketing-sales-dashboard",
+  "version": "1.0.0",
+  "description": "AI-Powered Marketing & Sales Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "nodemon server/server.js",
+    "client": "npm run dev --prefix client",
+    "dev": "node startup.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
+  }
+}

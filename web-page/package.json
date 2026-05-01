@@ -1,0 +1,14 @@
+{
+  "name": "aurahr-platform-unified",
+  "version": "1.0.0",
+  "description": "Unified AuraHR Enterprise Platform",
+  "main": "startup_web.js",
+  "scripts": {
+    "dev": "node system_controller.js",
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend && npm install --prefix master-dashboard && npm install --prefix Employee/frontend && npm install --prefix tech_lead/server && npm install --prefix tech_lead/frontend && npm install --prefix \"IT Helpdesk Ticketing System/server\" && npm install --prefix \"IT Helpdesk Ticketing System/client\" && npm install --prefix marketing_sales/client && npm install --prefix location/client",
+    "start": "node startup_web.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
